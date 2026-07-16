@@ -1,19 +1,15 @@
-import {
-  Camera,
-  PenLine,
-  ShieldCheck,
-  AlertTriangle,
-  ClipboardX,
-  ShieldOff,
-  CheckCircle2,
-  ArrowRight,
-  Cat,
-  Ban,
-} from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export default function Hero() {
   const navigate = useNavigate();
+
+  const scrollToPricing = () => {
+    const element = document.getElementById("pricing");
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
 
   return (
    <section className="mx-auto max-w-3xl px-6 pt-14 pb-16 text-center md:pt-20">
@@ -30,19 +26,12 @@ export default function Hero() {
         </p>
 
         <div className="mt-8 flex items-center justify-center gap-4">
-          <a
-            // href="#get-started"
+          <button
             onClick={() => navigate("/signup")}
             className="flex items-center gap-2 rounded-full bg-slate-900 px-6 py-3 text-sm font-medium text-white hover:bg-slate-800"
           >
             Get Started <ArrowRight size={16} />
-          </a>
-          <a
-            href="#demo"
-            className="rounded-full border border-slate-300 px-6 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50"
-          >
-            Book Demo
-          </a>
+          </button>
         </div>
       </section>
   );

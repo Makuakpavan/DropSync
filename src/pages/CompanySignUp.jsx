@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthRoleForm from "../components/AuthRoleForm";
-import { signup } from "../services/api";
+import { createCompanyAccount } from "../services/api";
 
-export default function SignupPage() {
+export default function CompanySignup() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -15,28 +15,33 @@ export default function SignupPage() {
       return;
     }
 
-    navigate("/login");
+    navigate("/");
   };
 
-  const handleSubmit = async ({ role, formData }) => {
+  const handleSubmit = async ({ formData }) => {
     setError("");
     setSuccess("");
     setLoading(true);
 
     try {
-      const response = await signup({
-        accountType: role === "individual" ? "individual" : role,
-        ...formData,
+      const response = await createCompanyAccount({
+        role: "company",
+        industry: formData.industry || "E-commerce",
+        companyName: formData.companyName,
+        businessEmail: formData.businessEmail,
+        phone: formData.phone,
+        address: formData.address,
+        password: formData.password,
       });
 
       if (response?.token) {
         localStorage.setItem("dropsync_token", response.token);
       }
 
-      setSuccess(response?.message || "Account prepared. Please verify your email.");
-      navigate("/verify");
+      setSuccess(response?.message || "Company account created.");
+      navigate("/company-verify");
     } catch (err) {
-      setError(err.message || "Unable to create the account right now.");
+      setError(err.message || "Unable to create the company account right now.");
     } finally {
       setLoading(false);
     }
@@ -45,14 +50,14 @@ export default function SignupPage() {
   return (
     <AuthRoleForm
       mode="signup"
-      initialRole="individual"
+      initialRole="company"
       onBack={handleBack}
       onSubmit={handleSubmit}
       loading={loading}
       error={error}
       success={success}
-      backLabel="Back to login"
-      submitLabel="Create account"
+      backLabel="Back to home"
+      submitLabel="Continue"
       heading="Create your account"
       subtitle="Choose your role and fill in the details."
       footerText="Already have an account?"

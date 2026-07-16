@@ -3,16 +3,22 @@
     
 //   );
 // }
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { ArrowLeft, ShieldCheck, Box } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { verifyAccount } from "../services/api";
 
 export default function VerificationPage() {
+  const navigate = useNavigate();
   const email = "john.doe@email.com";
   const CODE_LENGTH = 6;
   const RESEND_SECONDS = 45;
 
   const [code, setCode] = useState(Array(CODE_LENGTH).fill(""));
   const [secondsLeft, setSecondsLeft] = useState(RESEND_SECONDS);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const inputRefs = useRef([]);
 
   useEffect(() => {
@@ -81,10 +87,23 @@ export default function VerificationPage() {
 
   const isComplete = code.every((c) => c !== "");
 
-  const handleVerify = (e) => {
+  const handleVerify = async (e) => {
     e.preventDefault();
     if (!isComplete) return;
-    console.log("Verifying code:", code.join(""));
+
+    setError("");
+    setSuccess("");
+    setLoading(true);
+
+    try {
+      const response = await verifyAccount({ code: code.join("") });
+      setSuccess(response?.message || "Account verified successfully.");
+      navigate("/login");
+    } catch (err) {
+      setError(err.message || "Unable to verify your account right now.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const steps = ["Personal", "Verify", "Complete"];
@@ -96,6 +115,7 @@ export default function VerificationPage() {
       <div className="w-full max-w-md mb-4 sm:mb-6">
         <button
           type="button"
+          onClick={() => navigate("/")}
           className="flex items-center gap-2 text-slate-900 hover:text-slate-700 text-sm font-semibold transition-colors"
         >
           <ArrowLeft size={16} />
@@ -205,20 +225,24 @@ export default function VerificationPage() {
             )}
           </div>
 
+          {error ? <p className="mb-4 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-600">{error}</p> : null}
+          {success ? <p className="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-600">{success}</p> : null}
+
           {/* Buttons */}
           <div className="grid grid-cols-2 gap-3">
             <button
               type="button"
+              onClick={() => navigate("/signup")}
               className="w-full border border-slate-200 text-slate-900 font-semibold py-3.5 rounded-xl hover:bg-slate-50 transition-colors"
             >
               Back
             </button>
             <button
               type="submit"
-              disabled={!isComplete}
+              disabled={!isComplete || loading}
               className="w-full bg-slate-900 text-white font-semibold py-3.5 rounded-xl hover:bg-slate-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-slate-900"
             >
-              Verify account
+              {loading ? "Verifying..." : "Verify account"}
             </button>
           </div>
         </form>

@@ -1,15 +1,4 @@
-import {
-  Camera,
-  PenLine,
-  ShieldCheck,
-  AlertTriangle,
-  ClipboardX,
-  ShieldOff,
-  CheckCircle2,
-  ArrowRight,
-  Cat,
-  Ban,
-} from "lucide-react";
+import { AlertTriangle, ClipboardX, ShieldOff } from "lucide-react";
 import ProblemItem from "./ProblemItem";
 
 export default function ProblemBand() {

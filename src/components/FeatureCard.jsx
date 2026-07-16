@@ -1,15 +1,4 @@
-import {
-  Camera,
-  PenLine,
-  ShieldCheck,
-  AlertTriangle,
-  ClipboardX,
-  ShieldOff,
-  CheckCircle2,
-  ArrowRight,
-  Cat,
-  Ban,
-} from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 
 export default function FeatureCard({ title, items }) {
   return (

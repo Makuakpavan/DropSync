@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import AuthRoleForm from "../components/AuthRoleForm";
 import { signup } from "../services/api";
 
-export default function SignupPage() {
+export default function DriverSignup() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -15,17 +15,17 @@ export default function SignupPage() {
       return;
     }
 
-    navigate("/login");
+    navigate("/");
   };
 
-  const handleSubmit = async ({ role, formData }) => {
+  const handleSubmit = async ({ formData }) => {
     setError("");
     setSuccess("");
     setLoading(true);
 
     try {
       const response = await signup({
-        accountType: role === "individual" ? "individual" : role,
+        accountType: "driver",
         ...formData,
       });
 
@@ -33,10 +33,10 @@ export default function SignupPage() {
         localStorage.setItem("dropsync_token", response.token);
       }
 
-      setSuccess(response?.message || "Account prepared. Please verify your email.");
+      setSuccess(response?.message || "Driver account prepared. Please verify your email.");
       navigate("/verify");
     } catch (err) {
-      setError(err.message || "Unable to create the account right now.");
+      setError(err.message || "Unable to create the driver account right now.");
     } finally {
       setLoading(false);
     }
@@ -45,14 +45,14 @@ export default function SignupPage() {
   return (
     <AuthRoleForm
       mode="signup"
-      initialRole="individual"
+      initialRole="driver"
       onBack={handleBack}
       onSubmit={handleSubmit}
       loading={loading}
       error={error}
       success={success}
-      backLabel="Back to login"
-      submitLabel="Create account"
+      backLabel="Back to home"
+      submitLabel="Continue"
       heading="Create your account"
       subtitle="Choose your role and fill in the details."
       footerText="Already have an account?"

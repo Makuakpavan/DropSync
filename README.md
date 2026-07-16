@@ -17,3 +17,5 @@ If you are developing a production application, we recommend using TypeScript wi
 
 
 figma link = (https://www.figma.com/design/KSaFcW2H0vHpXdwu9mFRTk/..............?node-id=497-834&t=roFoXwf1aFlfwbPA-0)
+
+ninavlachos0@mail.com
