@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
   LayoutGrid,
   Package,
@@ -12,6 +12,7 @@ import {
   ChevronRight,
   PackageOpen,
 } from "lucide-react";
+import { useAuth } from "../context/useAuth";
 
 /**
  * DropSync — Overview Dashboard
@@ -30,11 +31,11 @@ import {
  */
 
 const navItems = [
-  { label: "Overview", icon: LayoutGrid, active: true },
-  { label: "Deliveries", icon: Package, active: false },
-  { label: "Dispatches", icon: Send, active: false },
-  { label: "Drivers", icon: Truck, active: false },
-  { label: "Settings", icon: Settings, active: false },
+  { label: "Overview", icon: LayoutGrid, to: "/driver-dashboard" },
+  { label: "Deliveries", icon: Package, to: "/driver-deliveries" },
+  { label: "Dispatches", icon: Send, to: "/available-drivers" },
+  { label: "Drivers", icon: Truck, to: "/available-drivers" },
+  { label: "Settings", icon: Settings, to: "/settings" },
 ];
 
 const stats = [
@@ -76,8 +77,8 @@ function Sidebar({ open, onClose, onLogout }) {
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-40 flex w-64 flex-col bg-[#0b1437] transition-transform duration-200 ease-in-out
-        lg:static lg:z-auto lg:translate-x-0
+        className={`fixed inset-y-0 left-0 z-40 flex h-screen w-64 flex-col bg-[#0b1437] transition-transform duration-200 ease-in-out
+        lg:sticky lg:top-0 lg:z-auto lg:translate-x-0
         ${open ? "translate-x-0" : "-translate-x-full"}`}
       >
         {/* Logo */}
@@ -101,19 +102,23 @@ function Sidebar({ open, onClose, onLogout }) {
 
         {/* Nav */}
         <nav className="mt-2 flex-1 space-y-1 px-3">
-          {navItems.map(({ label, icon: Icon, active }) => (
-            <button
+          {navItems.map(({ label, icon: Icon, to }) => (
+            <NavLink
               key={label}
-              className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors
-              ${
-                active
-                  ? "bg-orange-500 text-white shadow-sm shadow-orange-500/30"
-                  : "text-slate-300 hover:bg-white/5 hover:text-white"
-              }`}
+              to={to}
+              onClick={onClose}
+              className={({ isActive }) =>
+                `flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors
+                ${
+                  isActive
+                    ? "bg-orange-500 text-white shadow-sm shadow-orange-500/30"
+                    : "text-slate-300 hover:bg-white/5 hover:text-white"
+                }`
+              }
             >
               <Icon size={18} />
               {label}
-            </button>
+            </NavLink>
           ))}
         </nav>
 
@@ -190,10 +195,16 @@ function RecentActivity() {
 export default function DriverDashboard() {
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
   return (
     <div className="flex min-h-screen bg-slate-50">
-      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} onLogout={() => navigate("/")} />
+      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} onLogout={handleLogout} />
 
       <div className="flex min-w-0 flex-1 flex-col">
         {/* Top bar (mobile hamburger + title) */}

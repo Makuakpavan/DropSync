@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
   CheckCircle2,
   LayoutGrid,
@@ -9,17 +10,25 @@ import {
   Menu,
   X,
 } from "lucide-react";
+import { useAuth } from "../context/useAuth";
 
 export default function CustomerSettings() {
   const [navOpen, setNavOpen] = useState(false);
   const [notifyEmail, setNotifyEmail] = useState(true);
   const [notifySms, setNotifySms] = useState(true);
+  const navigate = useNavigate();
+  const { logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
   const navItems = [
-    { label: "Overview", icon: LayoutGrid, active: false },
-    { label: "My Deliveries", icon: Package, active: false },
-    { label: "Track a Delivery", icon: MapPin, active: false },
-    { label: "Settings", icon: SettingsIcon, active: true },
+    { label: "Overview", icon: LayoutGrid, to: "/customer-overview" },
+    { label: "My Deliveries", icon: Package, to: "/customer-delivery" },
+    { label: "Track a Delivery", icon: MapPin, to: "/customer-delivery-tracker" },
+    { label: "Settings", icon: SettingsIcon, to: "/customer-settings" },
   ];
 
   return (
@@ -39,7 +48,7 @@ export default function CustomerSettings() {
 
       {/* Sidebar */}
       <aside
-        className={`fixed md:static top-0 left-0 z-10 h-full w-60 shrink-0 bg-slate-900 flex flex-col justify-between transition-transform duration-200 ${
+        className={`fixed md:sticky top-0 left-0 z-10 h-screen w-60 shrink-0 bg-slate-900 flex flex-col justify-between transition-transform duration-200 ${
           navOpen ? "translate-x-0" : "-translate-x-full"
         } md:translate-x-0 pt-14 md:pt-0`}
       >
@@ -52,18 +61,22 @@ export default function CustomerSettings() {
           </div>
 
           <nav className="px-3 mt-2 md:mt-0 space-y-1">
-            {navItems.map((item) => (
-              <button
-                key={item.label}
-                className={`w-full flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
-                  item.active
-                    ? "bg-amber-500/10 text-amber-400"
-                    : "text-slate-400 hover:bg-white/5 hover:text-slate-200"
-                }`}
+            {navItems.map(({ label, icon: Icon, to }) => (
+              <NavLink
+                key={label}
+                to={to}
+                onClick={() => setNavOpen(false)}
+                className={({ isActive }) =>
+                  `w-full flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                    isActive
+                      ? "bg-amber-500/10 text-amber-400"
+                      : "text-slate-400 hover:bg-white/5 hover:text-slate-200"
+                  }`
+                }
               >
-                <item.icon className="h-4 w-4" />
-                {item.label}
-              </button>
+                <Icon className="h-4 w-4" />
+                {label}
+              </NavLink>
             ))}
           </nav>
         </div>
@@ -78,7 +91,7 @@ export default function CustomerSettings() {
               <p className="text-xs text-slate-400">Customer</p>
             </div>
           </div>
-          <button className="w-full flex items-center gap-2 text-xs text-slate-400 hover:text-slate-200 transition-colors">
+          <button onClick={handleLogout} className="w-full flex items-center gap-2 text-xs text-slate-400 hover:text-slate-200 transition-colors">
             <LogOut className="h-3.5 w-3.5" />
             Log out
           </button>
@@ -241,7 +254,13 @@ export default function CustomerSettings() {
             <p className="text-xs text-slate-500 mt-0.5 mb-4">
               Sign out of your DropSync account on this device.
             </p>
-            <button className="rounded-lg bg-red-50 hover:bg-red-100 text-red-600 text-sm font-medium px-5 py-2.5 transition-colors">
+            <button
+              onClick={() => {
+                logout();
+                window.location.href = "/login";
+              }}
+              className="rounded-lg bg-red-50 hover:bg-red-100 text-red-600 text-sm font-medium px-5 py-2.5 transition-colors"
+            >
               Log out
             </button>
           </div>

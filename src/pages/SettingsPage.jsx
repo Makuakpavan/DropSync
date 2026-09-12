@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
   LayoutGrid,
   Package,
@@ -12,6 +13,7 @@ import {
   Menu,
   X,
 } from "lucide-react";
+import { useAuth } from "../context/useAuth";
 
 /**
  * Settings Page
@@ -22,14 +24,14 @@ import {
  */
 
 const navItems = [
-  { label: "Overview", icon: LayoutGrid },
-  { label: "Deliveries", icon: Package },
-  { label: "Shipdules", icon: Truck },
-  { label: "Drivers", icon: UserCircle2 },
-  { label: "Settings", icon: SettingsIcon },
+  { label: "Overview", icon: LayoutGrid, to: "/driver-dashboard" },
+  { label: "Deliveries", icon: Package, to: "/driver-deliveries" },
+  { label: "Shipdules", icon: Truck, to: "/available-drivers" },
+  { label: "Drivers", icon: UserCircle2, to: "/available-drivers" },
+  { label: "Settings", icon: SettingsIcon, to: "/settings" },
 ];
 
-function Sidebar({ activeItem, setActiveItem, open, onClose }) {
+function Sidebar({ open, onClose, onLogout }) {
   return (
     <>
       {/* Mobile overlay */}
@@ -42,7 +44,7 @@ function Sidebar({ activeItem, setActiveItem, open, onClose }) {
       )}
 
       <aside
-        className={`fixed lg:static inset-y-0 left-0 z-40 w-64 bg-[#12142B] text-slate-300 flex flex-col justify-between
+        className={`fixed lg:sticky inset-y-0 left-0 z-40 h-screen w-64 bg-[#12142B] text-slate-300 flex flex-col justify-between
         transform transition-transform duration-200 ease-in-out
         ${open ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
       >
@@ -61,27 +63,24 @@ function Sidebar({ activeItem, setActiveItem, open, onClose }) {
           </div>
 
           <nav className="mt-2 px-3 space-y-1">
-            {navItems.map(({ label, icon: Icon }) => {
-              const isActive = activeItem === label;
-              return (
-                <button
-                  key={label}
-                  onClick={() => {
-                    setActiveItem(label);
-                    onClose();
-                  }}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
+            {navItems.map(({ label, icon: Icon, to }) => (
+              <NavLink
+                key={label}
+                to={to}
+                onClick={onClose}
+                className={({ isActive }) =>
+                  `w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
                     ${
                       isActive
                         ? "bg-orange-500 text-white"
                         : "text-slate-400 hover:bg-white/5 hover:text-slate-200"
-                    }`}
-                >
-                  <Icon size={18} />
-                  {label}
-                </button>
-              );
-            })}
+                    }`
+                }
+              >
+                <Icon size={18} />
+                {label}
+              </NavLink>
+            ))}
           </nav>
         </div>
 
@@ -94,7 +93,7 @@ function Sidebar({ activeItem, setActiveItem, open, onClose }) {
               <p className="text-sm font-medium text-white truncate">
                 Your Company
               </p>
-              <button className="flex items-center gap-1 text-xs text-slate-400 hover:text-slate-200">
+              <button onClick={onLogout} className="flex items-center gap-1 text-xs text-slate-400 hover:text-slate-200">
                 <LogOut size={12} />
                 Log out
               </button>
@@ -139,8 +138,14 @@ const inputClass =
   "w-full rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent";
 
 export default function SettingsPage() {
-  const [activeItem, setActiveItem] = useState("Settings");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const navigate = useNavigate();
+  const { logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
   const [profile, setProfile] = useState({
     companyName: "Your Company",
@@ -164,10 +169,9 @@ export default function SettingsPage() {
   return (
     <div className="min-h-screen bg-slate-50 flex">
       <Sidebar
-        activeItem={activeItem}
-        setActiveItem={setActiveItem}
         open={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
+        onLogout={handleLogout}
       />
 
       <div className="flex-1 min-w-0">
@@ -344,7 +348,13 @@ export default function SettingsPage() {
             <p className="text-sm text-rose-500/80 mt-0.5 mb-4">
               Sign out of your Employdge account on this device.
             </p>
-            <button className="px-5 py-2.5 rounded-lg bg-rose-100 text-rose-600 text-sm font-medium hover:bg-rose-200 transition-colors">
+            <button
+              onClick={() => {
+                logout();
+                window.location.href = "/login";
+              }}
+              className="px-5 py-2.5 rounded-lg bg-rose-100 text-rose-600 text-sm font-medium hover:bg-rose-200 transition-colors"
+            >
               Log out
             </button>
           </section>

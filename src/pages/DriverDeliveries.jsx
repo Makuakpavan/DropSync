@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
   LayoutGrid,
   Package,
@@ -11,6 +12,7 @@ import {
   Plus,
   FolderOpen,
 } from "lucide-react";
+import { useAuth } from "../context/useAuth";
 import { fetchDeliveries } from "../services/api";
 
 /**
@@ -27,11 +29,11 @@ import { fetchDeliveries } from "../services/api";
  */
 
 const navItems = [
-  { label: "Overview", icon: LayoutGrid, active: false },
-  { label: "Deliveries", icon: Package, active: true },
-  { label: "Dispatches", icon: Send, active: false },
-  { label: "Drivers", icon: Truck, active: false },
-  { label: "Settings", icon: Settings, active: false },
+  { label: "Overview", icon: LayoutGrid, to: "/driver-dashboard" },
+  { label: "Deliveries", icon: Package, to: "/driver-deliveries" },
+  { label: "Dispatches", icon: Send, to: "/available-drivers" },
+  { label: "Drivers", icon: Truck, to: "/available-drivers" },
+  { label: "Settings", icon: Settings, to: "/settings" },
 ];
 
 const tabs = [
@@ -43,7 +45,7 @@ const tabs = [
   { label: "Days out", count: null },
 ];
 
-function Sidebar({ open, onClose }) {
+function Sidebar({ open, onClose, onLogout }) {
   return (
     <>
       {open && (
@@ -55,8 +57,8 @@ function Sidebar({ open, onClose }) {
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-40 flex w-64 flex-col bg-[#0b1437] transition-transform duration-200 ease-in-out
-        lg:static lg:z-auto lg:translate-x-0
+        className={`fixed inset-y-0 left-0 z-40 flex h-screen w-64 flex-col bg-[#0b1437] transition-transform duration-200 ease-in-out
+        lg:sticky lg:top-0 lg:z-auto lg:translate-x-0
         ${open ? "translate-x-0" : "-translate-x-full"}`}
       >
         <div className="flex items-center justify-between px-6 py-6">
@@ -78,19 +80,23 @@ function Sidebar({ open, onClose }) {
         </div>
 
         <nav className="mt-2 flex-1 space-y-1 px-3">
-          {navItems.map(({ label, icon: Icon, active }) => (
-            <button
+          {navItems.map(({ label, icon: Icon, to }) => (
+            <NavLink
               key={label}
-              className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors
-              ${
-                active
-                  ? "bg-orange-500 text-white shadow-sm shadow-orange-500/30"
-                  : "text-slate-300 hover:bg-white/5 hover:text-white"
-              }`}
+              to={to}
+              onClick={onClose}
+              className={({ isActive }) =>
+                `flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors
+                ${
+                  isActive
+                    ? "bg-orange-500 text-white shadow-sm shadow-orange-500/30"
+                    : "text-slate-300 hover:bg-white/5 hover:text-white"
+                }`
+              }
             >
               <Icon size={18} />
               {label}
-            </button>
+            </NavLink>
           ))}
         </nav>
 
@@ -106,7 +112,7 @@ function Sidebar({ open, onClose }) {
               <p className="truncate text-xs text-slate-400">Company</p>
             </div>
           </div>
-          <button className="mt-1 flex w-full items-center gap-3 rounded-lg px-2 py-2 text-sm font-medium text-slate-300 hover:bg-white/5 hover:text-white">
+          <button onClick={onLogout} className="mt-1 flex w-full items-center gap-3 rounded-lg px-2 py-2 text-sm font-medium text-slate-300 hover:bg-white/5 hover:text-white">
             <LogOut size={16} />
             Log out
           </button>
@@ -171,6 +177,13 @@ export default function DropSyncDeliveries() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [deliveries, setDeliveries] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+  const { logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
   useEffect(() => {
     let active = true;
@@ -178,6 +191,7 @@ export default function DropSyncDeliveries() {
     const loadDeliveries = async () => {
       setLoading(true);
       try {
+        // BACKEND REQUIRED: fetches live delivery records for the dashboard feed.
         const response = await fetchDeliveries();
         if (active) {
           setDeliveries(Array.isArray(response) ? response : []);
@@ -201,7 +215,7 @@ export default function DropSyncDeliveries() {
 
   return (
     <div className="flex min-h-screen bg-slate-50">
-      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} onLogout={handleLogout} />
 
       <div className="flex min-w-0 flex-1 flex-col">
         {/* Top bar */}

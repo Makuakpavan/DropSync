@@ -4,13 +4,6 @@ import { useNavigate } from "react-router-dom";
 export default function Hero() {
   const navigate = useNavigate();
 
-  const scrollToPricing = () => {
-    const element = document.getElementById("pricing");
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-  };
-
   return (
    <section className="mx-auto max-w-3xl px-6 pt-14 pb-16 text-center md:pt-20">
         <h1 className="text-4xl font-bold leading-tight tracking-tight text-slate-900 md:text-5xl">

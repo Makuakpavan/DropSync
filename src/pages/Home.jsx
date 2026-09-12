@@ -1,9 +1,7 @@
-import Navbar from "../components/Navbar";
 import Hero from "../components/Hero";
 import ProblemBand from "../components/ProblemBand";
 import Features from "../components/Features";
 import CTA from "../components/CTA";
-import Footer from "../components/Footer";
 import Layout from "../components/Layout";
 
 export default function Home() {

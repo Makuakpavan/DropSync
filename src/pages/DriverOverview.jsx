@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { NavLink } from "react-router-dom";
 import {
   CheckCircle2,
   LayoutGrid,
@@ -9,6 +10,7 @@ import {
   X,
   Package,
 } from "lucide-react";
+import { useAuth } from "../context/useAuth";
 
 /**
  * Overview Page ("DropSync")
@@ -20,12 +22,12 @@ import {
  */
 
 const navItems = [
-  { label: "Overview", icon: LayoutGrid },
-  { label: "My Route", icon: Route },
-  { label: "Settings", icon: SettingsIcon },
+  { label: "Overview", icon: LayoutGrid, to: "/driver-overview" },
+  { label: "My Route", icon: Route, to: "/driver-dashboard" },
+  { label: "Settings", icon: SettingsIcon, to: "/settings" },
 ];
 
-function Sidebar({ activeItem, setActiveItem, open, onClose }) {
+function Sidebar({ open, onClose, onLogout }) {
   return (
     <>
       {open && (
@@ -37,7 +39,7 @@ function Sidebar({ activeItem, setActiveItem, open, onClose }) {
       )}
 
       <aside
-        className={`fixed lg:static inset-y-0 left-0 z-40 w-64 bg-[#12142B] text-slate-300 flex flex-col justify-between
+        className={`fixed lg:sticky inset-y-0 left-0 z-40 h-screen w-64 bg-[#12142B] text-slate-300 flex flex-col justify-between
         transform transition-transform duration-200 ease-in-out
         ${open ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
       >
@@ -57,27 +59,24 @@ function Sidebar({ activeItem, setActiveItem, open, onClose }) {
           </div>
 
           <nav className="mt-2 px-3 space-y-1">
-            {navItems.map(({ label, icon: Icon }) => {
-              const isActive = activeItem === label;
-              return (
-                <button
-                  key={label}
-                  onClick={() => {
-                    setActiveItem(label);
-                    onClose();
-                  }}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
+            {navItems.map(({ label, icon: Icon, to }) => (
+              <NavLink
+                key={label}
+                to={to}
+                onClick={onClose}
+                className={({ isActive }) =>
+                  `w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
                     ${
                       isActive
                         ? "bg-orange-500 text-white"
                         : "text-slate-400 hover:bg-white/5 hover:text-slate-200"
-                    }`}
-                >
-                  <Icon size={18} />
-                  {label}
-                </button>
-              );
-            })}
+                    }`
+                }
+              >
+                <Icon size={18} />
+                {label}
+              </NavLink>
+            ))}
           </nav>
         </div>
 
@@ -93,7 +92,12 @@ function Sidebar({ activeItem, setActiveItem, open, onClose }) {
               <p className="text-xs text-slate-400 truncate">Driver</p>
             </div>
           </div>
-          <button className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg border border-white/10 text-slate-300 text-sm hover:bg-white/5">
+          <button
+            onClick={() => {
+              onLogout();
+            }}
+            className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg border border-white/10 text-slate-300 text-sm hover:bg-white/5"
+          >
             <LogOut size={14} />
             Log out
           </button>
@@ -116,18 +120,18 @@ function StatCard({ label, value, hint }) {
 }
 
 export default function OverviewPage() {
-  const [activeItem, setActiveItem] = useState("Overview");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [available, setAvailable] = useState(false);
+  const { logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    window.location.href = "/login";
+  };
 
   return (
     <div className="min-h-screen bg-slate-50 flex">
-      <Sidebar
-        activeItem={activeItem}
-        setActiveItem={setActiveItem}
-        open={sidebarOpen}
-        onClose={() => setSidebarOpen(false)}
-      />
+      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} onLogout={handleLogout} />
 
       <div className="flex-1 min-w-0">
         {/* Top bar */}

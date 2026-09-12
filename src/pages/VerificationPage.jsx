@@ -96,6 +96,7 @@ export default function VerificationPage() {
     setLoading(true);
 
     try {
+      // BACKEND REQUIRED: confirms the verification code against the backend service.
       const response = await verifyAccount({ code: code.join("") });
       setSuccess(response?.message || "Account verified successfully.");
       navigate("/login");
