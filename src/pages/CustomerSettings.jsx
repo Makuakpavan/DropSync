@@ -255,10 +255,7 @@ export default function CustomerSettings() {
               Sign out of your DropSync account on this device.
             </p>
             <button
-              onClick={() => {
-                logout();
-                window.location.href = "/login";
-              }}
+              onClick={handleLogout}
               className="rounded-lg bg-red-50 hover:bg-red-100 text-red-600 text-sm font-medium px-5 py-2.5 transition-colors"
             >
               Log out

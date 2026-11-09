@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
   FiGrid,
   FiMap,
@@ -8,9 +9,17 @@ import {
   FiCamera,
 } from "react-icons/fi";
 import { FaUserCircle } from "react-icons/fa";
+import { useAuth } from "../context/useAuth";
 
 export default function Settings() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const navigate = useNavigate();
+  const { logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
   return (
     <div className="min-h-screen flex bg-slate-100">
@@ -26,20 +35,20 @@ export default function Settings() {
         </div>
 
         <nav className="flex-1 px-4 py-6 space-y-2">
-          <button className="flex w-full items-center gap-3 rounded-lg px-4 py-3 hover:bg-slate-700 text-slate-300">
+          <NavLink to="/driver-overview" className="flex w-full items-center gap-3 rounded-lg px-4 py-3 hover:bg-slate-700 text-slate-300">
             <FiGrid />
             Overview
-          </button>
+          </NavLink>
 
-          <button className="flex w-full items-center gap-3 rounded-lg px-4 py-3 hover:bg-slate-700 text-slate-300">
+          <NavLink to="/driver-dashboard" className="flex w-full items-center gap-3 rounded-lg px-4 py-3 hover:bg-slate-700 text-slate-300">
             <FiMap />
             My Route
-          </button>
+          </NavLink>
 
-          <button className="flex w-full items-center gap-3 rounded-lg px-4 py-3 bg-amber-400 text-black font-semibold">
+          <NavLink to="/driver-settings" className="flex w-full items-center gap-3 rounded-lg px-4 py-3 bg-amber-400 text-black font-semibold">
             <FiSettings />
             Settings
-          </button>
+          </NavLink>
         </nav>
 
         <div className="border-t border-slate-700 p-5">
@@ -51,7 +60,7 @@ export default function Settings() {
             </div>
           </div>
 
-          <button className="mt-6 flex items-center gap-2 text-slate-300 hover:text-white">
+          <button onClick={handleLogout} className="mt-6 flex items-center gap-2 text-slate-300 hover:text-white">
             <FiLogOut />
             Logout
           </button>
@@ -75,7 +84,7 @@ export default function Settings() {
         <header className="md:hidden bg-white px-5 py-4 flex justify-between items-center shadow">
           <h2 className="font-bold">Settings</h2>
 
-          <button onClick={() => setSidebarOpen(true)}>
+          <button type="button" onClick={() => setSidebarOpen(true)}>
             <FiMenu size={24} />
           </button>
         </header>

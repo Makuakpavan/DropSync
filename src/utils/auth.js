@@ -27,5 +27,13 @@ export function isAuthenticated() {
 }
 
 export function getDashboardPathForRole(role) {
-  return role === "driver" ? "/driver-dashboard" : "/customer-overview";
+  if (role === "driver") {
+    return "/driver-dashboard";
+  }
+
+  if (role === "company") {
+    return "/settings";
+  }
+
+  return "/customer-overview";
 }

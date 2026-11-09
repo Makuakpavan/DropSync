@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
   CheckCircle2,
   LayoutGrid,
@@ -24,7 +24,7 @@ import { useAuth } from "../context/useAuth";
 const navItems = [
   { label: "Overview", icon: LayoutGrid, to: "/driver-overview" },
   { label: "My Route", icon: Route, to: "/driver-dashboard" },
-  { label: "Settings", icon: SettingsIcon, to: "/settings" },
+  { label: "Settings", icon: SettingsIcon, to: "/driver-settings" },
 ];
 
 function Sidebar({ open, onClose, onLogout }) {
@@ -122,11 +122,12 @@ function StatCard({ label, value, hint }) {
 export default function OverviewPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [available, setAvailable] = useState(false);
+  const navigate = useNavigate();
   const { logout } = useAuth();
 
   const handleLogout = () => {
     logout();
-    window.location.href = "/login";
+    navigate("/login");
   };
 
   return (

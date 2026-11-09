@@ -349,10 +349,7 @@ export default function SettingsPage() {
               Sign out of your Employdge account on this device.
             </p>
             <button
-              onClick={() => {
-                logout();
-                window.location.href = "/login";
-              }}
+              onClick={handleLogout}
               className="px-5 py-2.5 rounded-lg bg-rose-100 text-rose-600 text-sm font-medium hover:bg-rose-200 transition-colors"
             >
               Log out

@@ -35,7 +35,7 @@ const navItems = [
   { label: "Deliveries", icon: Package, to: "/driver-deliveries" },
   { label: "Dispatches", icon: Send, to: "/available-drivers" },
   { label: "Drivers", icon: Truck, to: "/available-drivers" },
-  { label: "Settings", icon: Settings, to: "/settings" },
+  { label: "Settings", icon: Settings, to: "/driver-settings" },
 ];
 
 const stats = [

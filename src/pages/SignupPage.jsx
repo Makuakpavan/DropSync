@@ -2,14 +2,12 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthRoleForm from "../components/AuthRoleForm";
 import { signup } from "../services/api";
-import { useAuth } from "../context/useAuth";
 
-export default function SignupPage() {
+export default function SignupPage({ initialRole = "individual" }) {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const { login: loginUser } = useAuth();
 
   const handleBack = () => {
     if (window.history.length > 1 && window.history.state?.idx > 0) {
@@ -32,12 +30,8 @@ export default function SignupPage() {
         ...formData,
       });
 
-      if (response?.token) {
-        loginUser(response.token, role);
-      }
-
       setSuccess(response?.message || "Account prepared. Please verify your email.");
-      navigate("/verify");
+      navigate("/verify", { state: { role } });
     } catch (err) {
       setError(err.message || "Unable to create the account right now.");
     } finally {
@@ -48,7 +42,8 @@ export default function SignupPage() {
   return (
     <AuthRoleForm
       mode="signup"
-      initialRole="individual"
+      key={initialRole}
+      initialRole={initialRole}
       onBack={handleBack}
       onSubmit={handleSubmit}
       loading={loading}

@@ -7,6 +7,7 @@ import {
   Star,
   ShieldCheck,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function DeliveryTracker() {
   const [trackingNumber, setTrackingNumber] = useState("WB-38291");
@@ -38,12 +39,12 @@ export default function DeliveryTracker() {
             <span className="text-base font-semibold text-slate-900 tracking-tight">DropSync</span>
           </div>
           <div className="flex items-center gap-4">
-            <a href="#" className="text-sm text-slate-500 hover:text-slate-700 hidden sm:inline">
+            <Link to="/login" className="text-sm text-slate-500 hover:text-slate-700 hidden sm:inline">
               Sign In
-            </a>
-            <button className="rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-sm font-medium px-4 py-2 transition-colors">
+            </Link>
+            <Link to="/signup" className="rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-sm font-medium px-4 py-2 transition-colors">
               Get started
-            </button>
+            </Link>
           </div>
         </div>
       </header>
@@ -181,9 +182,9 @@ export default function DeliveryTracker() {
         <p className="text-center text-xs text-slate-400 mt-6 max-w-lg mx-auto leading-relaxed">
           Once your delivery arrives, you'll be able to rate the driver or report a problem right on this
           page. If your order is linked to a DropSync account, you'll be able to{" "}
-          <a href="#" className="text-amber-600 hover:text-amber-700 font-medium">
+          <Link to="/login" className="text-amber-600 hover:text-amber-700 font-medium">
             Sign in
-          </a>{" "}
+          </Link>{" "}
           to keep it tied to your profile.
         </p>
       </main>

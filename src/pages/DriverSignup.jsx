@@ -2,14 +2,12 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthRoleForm from "../components/AuthRoleForm";
 import { signup } from "../services/api";
-import { useAuth } from "../context/useAuth";
 
 export default function DriverSignup() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const { login: loginUser } = useAuth();
 
   const handleBack = () => {
     if (window.history.length > 1 && window.history.state?.idx > 0) {
@@ -31,12 +29,8 @@ export default function DriverSignup() {
         ...formData,
       });
 
-      if (response?.token) {
-        loginUser(response.token, "driver");
-      }
-
       setSuccess(response?.message || "Driver account prepared. Please verify your email.");
-      navigate("/verify");
+      navigate("/verify", { state: { role: "driver" } });
     } catch (err) {
       setError(err.message || "Unable to create the driver account right now.");
     } finally {

@@ -1,11 +1,29 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CheckCircle2, Info } from "lucide-react";
+import { verifyAccount } from "../services/api";
 
 export default function CompanyVerificationPage() {
   const navigate = useNavigate();
-  const [role] = useState("company");
+  const role = "company";
   const [code, setCode] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setError("");
+    setLoading(true);
+
+    try {
+      await verifyAccount({ code });
+      navigate("/company-login");
+    } catch (verificationError) {
+      setError(verificationError.message || "Unable to verify your account right now.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const tabs = [
     { id: "company", label: "Company" },
@@ -87,13 +105,7 @@ export default function CompanyVerificationPage() {
           </div>
 
           {/* Form */}
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              navigate("/login");
-            }}
-            className="space-y-1.5"
-          >
+          <form onSubmit={handleSubmit} className="space-y-1.5">
             <label htmlFor="code" className="block text-xs font-medium tracking-wide text-slate-600 uppercase mb-1.5">
               Verification code
             </label>
@@ -102,6 +114,8 @@ export default function CompanyVerificationPage() {
               type="text"
               inputMode="numeric"
               maxLength={6}
+              required
+              minLength={6}
               value={code}
               onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
               placeholder="6-digit code"
@@ -112,6 +126,7 @@ export default function CompanyVerificationPage() {
                 Resend code
               </button>
             </div>
+            {error ? <p className="text-sm text-rose-600" role="alert">{error}</p> : null}
 
             {/* Actions */}
             <div className="flex gap-3 pt-3">
@@ -124,9 +139,10 @@ export default function CompanyVerificationPage() {
               </button>
               <button
                 type="submit"
+                disabled={loading}
                 className="flex-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-sm font-medium py-2.5 transition-colors"
               >
-                Create account
+                {loading ? "Verifying..." : "Create account"}
               </button>
             </div>
           </form>
@@ -136,7 +152,7 @@ export default function CompanyVerificationPage() {
             Already have an account?{" "}
             <button
               type="button"
-              onClick={() => navigate("/login")}
+              onClick={() => navigate("/company-login")}
               className="text-amber-600 hover:text-amber-700 font-medium"
             >
               Sign in

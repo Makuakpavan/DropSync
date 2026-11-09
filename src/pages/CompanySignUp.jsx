@@ -2,14 +2,12 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthRoleForm from "../components/AuthRoleForm";
 import { createCompanyAccount } from "../services/api";
-import { useAuth } from "../context/useAuth";
 
 export default function CompanySignup() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const { login: loginUser } = useAuth();
 
   const handleBack = () => {
     if (window.history.length > 1 && window.history.state?.idx > 0) {
@@ -36,10 +34,6 @@ export default function CompanySignup() {
         password: formData.password,
       });
 
-      if (response?.token) {
-        loginUser(response.token, "company");
-      }
-
       setSuccess(response?.message || "Company account created.");
       navigate("/company-verify");
     } catch (err) {
@@ -64,7 +58,7 @@ export default function CompanySignup() {
       subtitle="Choose your role and fill in the details."
       footerText="Already have an account?"
       footerActionText="Sign in"
-      onFooterAction={() => navigate("/login")}
+      onFooterAction={() => navigate("/company-login")}
     />
   );
 }

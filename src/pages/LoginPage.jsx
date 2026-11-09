@@ -20,10 +20,11 @@ export default function LoginPage({ initialRole = "individual" }) {
     try {
       // BACKEND REQUIRED: real auth check, but api.js includes a mock fallback until the backend is ready.
       const response = await login({ role, ...formData });
-      if (response?.token) {
-        loginUser(response.token, role);
+      if (!response?.token) {
+        throw new Error("The login response did not include an authentication token.");
       }
 
+      loginUser(response.token, role);
       setSuccess(response?.message || "Signed in successfully.");
       navigate(getDashboardPathForRole(role));
     } catch (err) {
@@ -36,6 +37,7 @@ export default function LoginPage({ initialRole = "individual" }) {
   return (
     <AuthRoleForm
       mode="login"
+      key={initialRole}
       initialRole={initialRole}
       onBack={() => navigate("/")}
       onSubmit={handleSubmit}

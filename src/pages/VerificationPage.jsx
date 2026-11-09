@@ -5,11 +5,12 @@
 // }
 import { useState, useRef, useEffect } from "react";
 import { ArrowLeft, ShieldCheck, Box } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { verifyAccount } from "../services/api";
 
 export default function VerificationPage() {
   const navigate = useNavigate();
+  const { state } = useLocation();
   const email = "john.doe@email.com";
   const CODE_LENGTH = 6;
   const RESEND_SECONDS = 45;
@@ -99,7 +100,12 @@ export default function VerificationPage() {
       // BACKEND REQUIRED: confirms the verification code against the backend service.
       const response = await verifyAccount({ code: code.join("") });
       setSuccess(response?.message || "Account verified successfully.");
-      navigate("/login");
+      const loginPath = {
+        company: "/company-login",
+        driver: "/driver-login",
+        customer: "/customer-login",
+      }[state?.role] || "/login";
+      navigate(loginPath);
     } catch (err) {
       setError(err.message || "Unable to verify your account right now.");
     } finally {
